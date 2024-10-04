@@ -78,13 +78,10 @@ contract botMiniGameFacet is modifiersFacet {
         nft.elementaPoint += _point;
     }
 
-    function testCalling(uint32 _numbWords) public returns(uint[] memory){
+    function callVRF(uint32 _numbWords) public returns(uint[] memory){
         return LibVRF.reqVRF(_numbWords);
 
     }
 
-    function getRandomValues() public view returns(uint[] memory){
-        return LibVRF.resVRF();
-    }
 
 }

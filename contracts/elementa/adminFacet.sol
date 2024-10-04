@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-import {UserType, User, EquipmentType, ElementaItem} from "../shared/storage/structs/AppStorage.sol";
+import {UserType, User, EquipmentType, ElementaItem, ElementaNFT} from "../shared/storage/structs/AppStorage.sol";
 import {modifiersFacet} from "../shared/utils/modifiersFacet.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {LibVRF} from "../shared/libraries/LibVRF.sol";
+
 
 contract adminFacet is modifiersFacet {
     using Strings for *;

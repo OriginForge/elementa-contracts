@@ -44,7 +44,8 @@ struct ElementaNFT {
     uint plusHeartPoint;
     uint updateHeartTime;
     uint elementaPoint;
-
+    // from VRF, origin random value
+    uint originRandomValue;
     // uint[10] _gap;
     // uint[10] equipmentItem;
 }

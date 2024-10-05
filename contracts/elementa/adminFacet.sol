@@ -46,7 +46,7 @@ contract adminFacet is modifiersFacet {
         s.users[userId].delegateEOA = _delegateEOA;
         s.users[userId].refferalId = _refferalId;
         s.users[_refferalId].refferalCount++;
-
+        s.users[userId].nftId = s.globalUserIndex;
         s.userIndex[userId] = s.globalUserIndex;
 
         s.elementaNFTs[s.globalUserIndex].level = 1;

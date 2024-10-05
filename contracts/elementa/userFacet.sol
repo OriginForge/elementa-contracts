@@ -8,6 +8,7 @@ import {LibVRF} from "../shared/libraries/LibVRF.sol";
 contract userFacet is modifiersFacet {
     event RegisterAddress(address indexed _address, uint indexed _nftId);
 
+
     function user_inputAddress(
         address _address
     ) external onlyDelegateEOA onlyEOA(_address) {
@@ -15,19 +16,23 @@ contract userFacet is modifiersFacet {
 
         s.delegateEOAs[msg.sender].isOwnNFT = true;
 
-        // NFT mint to user
+        s.elementaNFTs[s.delegateEOAs[msg.sender].userIndex].originRandomValue = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender)));
+
         IERC721(s.contracts["nft"]).diamondMint(
             _address,
             s.delegateEOAs[msg.sender].userIndex
         );
-        
-        s.elementaNFTs[s.delegateEOAs[msg.sender].userIndex].originRandomValue = LibVRF.reqVRF(0)[0];
+
+        IERC721(s.contracts["nft"])._update_metadata_uri(s.delegateEOAs[msg.sender].userIndex);        
  
         // refferal transfer
         // token transfer(ref, amount)
 
         emit RegisterAddress(_address, s.delegateEOAs[msg.sender].userIndex);
     }
+
+
+    
 
     function user_getUserInfo(
         string memory _userId
@@ -41,6 +46,12 @@ contract userFacet is modifiersFacet {
     ) external view returns (ElementaNFT memory) {
         ElementaNFT memory userNFT = s.elementaNFTs[_nftId];
         return userNFT;
+    }
+
+    function user_getNftInfoById(string memory _userId) external view returns (uint,ElementaNFT memory) {
+        uint nftId = s.userIndex[_userId];
+        ElementaNFT memory userNFT = s.elementaNFTs[nftId];
+        return (nftId, userNFT);
     }
 
     function user_getDelegateInfo(

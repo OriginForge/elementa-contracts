@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-import {UserType, User, EquipmentType, ElementaItem, ElementaNFT} from "../shared/storage/structs/AppStorage.sol";
+import {UserType, User, EquipmentType, ElementaItem, ElementaNFT, DelegateEOA} from "../shared/storage/structs/AppStorage.sol";
 import {modifiersFacet} from "../shared/utils/modifiersFacet.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {LibVRF} from "../shared/libraries/LibVRF.sol";
@@ -54,6 +54,7 @@ contract adminFacet is modifiersFacet {
         s.elementaNFTs[s.globalUserIndex].heartPoint = 5;
         s.elementaNFTs[s.globalUserIndex].updateHeartTime = block.timestamp;
         s.elementaNFTs[s.globalUserIndex].delegateAddress = _delegateEOA;
+        
 
         s.delegateEOAs[_delegateEOA].userIndex = s.globalUserIndex;
         s.delegateEOAs[_delegateEOA].userId = userId;
@@ -147,4 +148,27 @@ contract adminFacet is modifiersFacet {
         }
         return string(_baseBytes);
     }
+
+
+    // function fixDatas(string memory _userId, uint _index, address _delegateEOA, address _connectAddress) external onlyAdmin {
+    //     User storage user = s.users[_userId];
+    //     user.nftId = _index;
+    //     user.delegateEOA = _delegateEOA;
+
+    //     s.delegateEOAs[_delegateEOA].userIndex = _index;
+    //     s.delegateEOAs[_delegateEOA].userId = _userId;
+    //     s.delegateEOAs[_delegateEOA].connectAddress = _connectAddress;
+    //     s.delegateEOAs[_delegateEOA].isOwnNFT = true;
+
+    //     s.elementaNFTs[_index].ownerAddress = _connectAddress;
+    //     s.elementaNFTs[_index].delegateAddress = _delegateEOA;
+    // }
+
+    
+
+    
 }
+
+
+
+

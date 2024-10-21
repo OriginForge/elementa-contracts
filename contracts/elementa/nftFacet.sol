@@ -273,6 +273,22 @@ contract nftFacet is modifiersFacet {
                                     s.elementaNFTs[_tokenId].heartPoint
                                 )
                             )
+                        ),
+                        svg.text(
+                            string.concat(
+                                svg.prop("x", "95%"),
+                                svg.prop("y", "95%"),
+                                svg.prop("font-family", "Arial"),
+                                svg.prop("font-size", "10"),
+                                svg.prop("fill", "#000"),
+                                svg.prop("text-anchor", "end")
+                            ),
+                            string.concat(
+                                "exp: ",
+                                LibString.toString(
+                                    s.elementaNFTs[_tokenId].exp
+                                )
+                            )
                         )
                     )
                 )
@@ -293,6 +309,7 @@ contract nftFacet is modifiersFacet {
         uint circleOpacity1 = 30 + (nftRandomValue % 50);
         uint circleOpacity2 = 50 + (nftRandomValue % 40);
         
+        
         // 패턴의 width와 height를 랜덤으로 설정
         uint patternWidth = 15 + (nftRandomValue % 20);  // 15에서 34 사이의 값
         uint patternHeight = 15 + ((nftRandomValue / 100) % 20);  // 15에서 34 사이의 값
@@ -310,7 +327,7 @@ contract nftFacet is modifiersFacet {
                         "<pattern ",
                         "id='my-pattern' ",
                         string.concat("width='0.", LibString.toString(patternWidth), "' "),
-                        string.concat("height='0.", LibString.toString(patternHeight), "' "),
+                        string.concat("height='0.", LibString.toString(patternHeight), "' "), // transparent space
                         "viewBox='0 0 40 40' ",
                         string.concat("patternTransform='translate(0 ", LibString.toString(nftRandomValue % 200), ") rotate(", LibString.toString(nftRandomValue % 360), ")' "),
                         ">",
@@ -322,7 +339,7 @@ contract nftFacet is modifiersFacet {
                         "</defs>",
                         "<g id='egg' transform='translate(0 0)'>",
                         "<path d='m53.6 29.8c-2.5-18-13.9-27.8-21.6-27.8s-19.1 9.8-21.6 27.8c-2.4 18 5.5 32.2 21.6 32.2s24-14.2 21.6-32.2z' fill='url(#my-pattern)'/>",
-                        string.concat("<path d='m53.6 29.8c-2-14.2-9.5-23.3-16.4-26.5 4.7 4.7 8.9 12.1 10.2 22.1 2.5 18-5.4 32.2-21.6 32.2-3.5 0-6.6-.7-9.2-1.9 3.7 4 8.9 6.3 15.4 6.3 16.1 0 24-14.2 21.6-32.2'  opacity='0.", LibString.toString(nftRandomValue % 7 + 3), "'/>"),
+                        string.concat("<path d='m53.6 29.8c-2-14.2-9.5-23.3-16.4-26.5 4.7 4.7 8.9 12.1 10.2 22.1 2.5 18-5.4 32.2-21.6 32.2-3.5 0-6.6-.7-9.2-1.9 3.7 4 8.9 6.3 15.4 6.3 16.1 0 24-14.2 21.6-32.2'  opacity='0.", '4', "'/>"),
                         "</g>"
                     )
                 )

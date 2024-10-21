@@ -15,8 +15,11 @@ contract userFacet is modifiersFacet {
         s.users[s.delegateEOAs[msg.sender].userId].reciveAddress = _address;
 
         s.delegateEOAs[msg.sender].isOwnNFT = true;
+        s.delegateEOAs[msg.sender].connectAddress = _address;
 
-        s.elementaNFTs[s.delegateEOAs[msg.sender].userIndex].originRandomValue = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender)));
+        // s.elementaNFTs[s.delegateEOAs[msg.sender].userIndex].originRandomValue = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender)));
+        s.elementaNFTs[s.delegateEOAs[msg.sender].userIndex].originRandomValue = LibVRF.reqVRF(1)[0];
+        s.elementaNFTs[s.delegateEOAs[msg.sender].userIndex].ownerAddress = _address;
 
         IERC721(s.contracts["nft"]).diamondMint(
             _address,
@@ -32,7 +35,28 @@ contract userFacet is modifiersFacet {
     }
 
 
-    
+    // function testVRF_mint() external {
+    //     s.users[s.delegateEOAs[msg.sender].userId].reciveAddress = msg.sender;
+
+    //     s.delegateEOAs[msg.sender].isOwnNFT = true;
+    //     s.delegateEOAs[msg.sender].connectAddress = msg.sender;
+
+    //     s.elementaNFTs[7].originRandomValue = LibVRF.reqVRF(1)[0];
+    //     s.elementaNFTs[7].ownerAddress = msg.sender;
+
+    //     // IERC721(s.contracts["nft"]).diamondMint(
+    //     //     msg.sender,
+    //     //     6
+    //     // );
+
+    //     IERC721(s.contracts["nft"])._update_metadata_uri(7);        
+ 
+    //     // emit RegisterAddress(msg.sender, 6);
+    //     //    s.globalUserIndex++;
+    //     // refferal transfer
+    //     // token transfer(ref, amount)
+
+    // }
 
     function user_getUserInfo(
         string memory _userId

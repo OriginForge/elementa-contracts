@@ -55,7 +55,6 @@ contract VRFConsumer is VRFConsumerBase {
     ) internal override {
         // 배열에 여러 랜덤 값을 저장
         sRandomWords = randomWords;
-
     }
 
     function VRFCall(

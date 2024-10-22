@@ -89,10 +89,7 @@ contract botMiniGameFacet is modifiersFacet {
         nft.elementaPoint += _point;
     }
 
-    function callVRF(uint32 _numbWords) public returns(uint[] memory){
-        return LibVRF.reqVRF(_numbWords);
-
-    }
+    
 
 
     function isLevelUp(string memory _userId) public view returns (bool) {
@@ -182,6 +179,10 @@ contract botMiniGameFacet is modifiersFacet {
         _updateHeartPoints(s.userIndex[_userId]);
         ElementaToken storage token = s.elementaToken[1];
         ElementaNFT storage nft = s.elementaNFTs[s.userIndex[_userId]];
+        
+        // min 1 ~ 64 random value
+        
+    
         require(
             nft.heartPoint >= 3 ||
                 nft.plusHeartPoint >= 3 ,
@@ -201,6 +202,7 @@ contract botMiniGameFacet is modifiersFacet {
         }
 
         uint getReward = _amount * 1e19;
+        // uint getReward = _playRouletteWithVRF() * 1e19;
         nft.exp += 30;
         nft.elementaPoint += getReward;
         token.mintedSupply += getReward;
@@ -213,5 +215,10 @@ contract botMiniGameFacet is modifiersFacet {
         return getReward;
     }
 
+    function _playRouletteWithVRF() internal returns(uint) {
+        LibVRF.reqVRFRoulette();
+        IOraklVRF oraklVRF = IOraklVRF(address(0xAFfE6BaF73bAE2C8749Dc1A18F87c3e35d9fF777));
+        return oraklVRF.sRandomWords();
+    }
 
 }

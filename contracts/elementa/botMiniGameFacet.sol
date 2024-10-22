@@ -20,7 +20,7 @@ contract botMiniGameFacet is modifiersFacet {
         address indexed userAddress,
         uint indexed amount
     );
-    event userUpgrade(string indexed userId, uint indexed userLevel);
+    event userUpgrade(string indexed userId, uint indexed elementaId,uint indexed userLevel);
 
     function getElementa20Info() public view returns (uint, uint, uint) {}
 
@@ -94,6 +94,54 @@ contract botMiniGameFacet is modifiersFacet {
 
     }
 
+
+    function isLevelUp(string memory _userId) public view returns (bool) {
+        
+        uint currentLevel = s.elementaNFTs[s.userIndex[_userId]].level;
+        uint currentExp = s.elementaNFTs[s.userIndex[_userId]].exp;
+        uint maxLevel = 10;
+        
+        if(s.levelInfos[currentLevel+1].requireExp <= currentExp && maxLevel > currentLevel) {
+            return true;
+        }
+        return false;
+    }
+
+    function elementaUpgrade(string memory _userId) external onlyDelegateEOA  {
+        require(isLevelUp(_userId), "Not enough exp");
+        IERC721 elementaNFT = IERC721(s.contracts["nft"]);
+        
+        uint nextLevel = s.elementaNFTs[s.userIndex[_userId]].level + 1;
+        s.levelInfos[nextLevel].levelUserCount += 1;
+        // s.levelInfos[nextLevel-1].levelUserCount -= 1;
+
+        s.elementaNFTs[s.userIndex[_userId]].level = nextLevel;
+
+        s.elementaNFTs[s.userIndex[_userId]].heartMax = s.levelInfos[nextLevel].heartMax;
+        s.elementaNFTs[s.userIndex[_userId]].heartPoint = s.levelInfos[nextLevel].heartMax;
+        s.elementaNFTs[s.userIndex[_userId]].updateHeartTime = block.timestamp;
+
+        elementaNFT._update_metadata_uri(s.userIndex[_userId]);
+        
+        emit userUpgrade(_userId, s.userIndex[_userId], nextLevel);
+    }
+
+
+    // function snailzUpgrade(uint _telegramId) external onlyDelegateEOA {
+    //     require(s.isDelegateAddress[msg.sender], "Not delegate EOA");
+    //     require(s.users[_telegramId].exp >= s.gradeInfos[s.users[_telegramId].userGrade+1].requireExp, "Not enough exp");
+        
+    //     s.users[_telegramId].userGrade += 1;
+    //     s.users[_telegramId].heartMax = s.gradeInfos[s.users[_telegramId].userGrade].heartMax;
+    //     s.users[_telegramId].heartPoint = s.gradeInfos[s.users[_telegramId].userGrade].heartMax;
+    //     s.users[_telegramId].lastHeartTime = block.timestamp;
+
+    //     s.gradeInfos[s.users[_telegramId].userGrade].gradeUserCount += 1;
+    //     s.gradeInfos[s.users[_telegramId].userGrade-1].gradeUserCount -= 1;
+
+
+    //     emit userUpgrade(_telegramId, s.users[_telegramId].userGrade);
+    // }
 
     function playDice(string memory _userId, uint _amount) external onlyDelegateEOA returns(uint){    
         _updateHeartPoints(s.userIndex[_userId]);

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-import {UserType, User, EquipmentType, ElementaItem, ElementaNFT, DelegateEOA} from "../shared/storage/structs/AppStorage.sol";
+import {UserType, User, EquipmentType, ElementaItem, ElementaNFT, DelegateEOA, levelInfo} from "../shared/storage/structs/AppStorage.sol";
 import {modifiersFacet} from "../shared/utils/modifiersFacet.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {LibVRF} from "../shared/libraries/LibVRF.sol";
@@ -74,6 +74,25 @@ contract adminFacet is modifiersFacet {
         s.oraklVRF.callbackGasLimit = _callbackGasLimit;
     }
 
+    function admin_userMigration(string memory _userId, uint _level, uint _exp, uint _point, uint _heartMax) external onlyAdmin {
+        s.elementaNFTs[s.userIndex[_userId]].level = _level;
+        s.elementaNFTs[s.userIndex[_userId]].exp += _exp;
+        s.elementaNFTs[s.userIndex[_userId]].elementaPoint += _point;
+        s.elementaNFTs[s.userIndex[_userId]].heartMax = _heartMax;
+
+        s.elementaToken[1].mintedSupply += _point;
+
+    }
+
+    function admin_setLevelInfo(uint _level, uint _requireExp, uint _heartMax) external onlyAdmin {
+        s.levelInfos[_level].level = _level;
+        s.levelInfos[_level].requireExp = _requireExp;
+        s.levelInfos[_level].heartMax = _heartMax;
+    }
+
+    function admin_getLevelInfos(uint _level) external view returns (levelInfo memory) {
+        return s.levelInfos[_level];
+    }
     // function admin_registerWalletUser(address _delegateEOA) external onlyAdmin {
     //     string memory userId = lower(Strings.toHexString(msg.sender));
 

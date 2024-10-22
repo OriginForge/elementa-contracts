@@ -33,7 +33,7 @@ contract userFacet is modifiersFacet {
 
         emit RegisterAddress(_address, s.delegateEOAs[msg.sender].userIndex);
     }
-
+    
 
     // function testVRF_mint() external {
     //     s.users[s.delegateEOAs[msg.sender].userId].reciveAddress = msg.sender;

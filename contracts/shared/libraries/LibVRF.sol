@@ -43,10 +43,6 @@ library LibVRF {
         return oraklVRF.elementaVRFCall(_userId);
     }
 
-    function returnVRFRoulette(string memory _userId) external view returns (uint) {
-        IOraklVRF oraklVRF = IOraklVRF(VRF_ORAKL_ROULETTE);
-        
-    }
 
     function resVRFDice(string memory _userId) internal returns (uint) {
         IOraklVRF oraklVRF = IOraklVRF(VRF_ORAKL_DICE);

@@ -29,7 +29,7 @@ contract nftFacet is modifiersFacet {
                     ),
                     json.property(
                         "description",
-                        "Test Elementa dNFT, for testing"
+                        "The Elementa is a unique NFT that represents a character in the Elementa universe. Each Elementa has a unique set of attributes and abilities that make it valuable in the game."
                     ),
                     json.property(
                         "image",

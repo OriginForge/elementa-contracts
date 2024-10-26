@@ -318,10 +318,11 @@ contract nftFacet is modifiersFacet {
             string.concat(
                 svg.top(
                     string.concat(
-                        svg.prop("viewBox", "0 0 125 125"),
-                        svg.prop("width", "100%"),
-                        svg.prop("height", "100%")
-                    ),
+    svg.prop("viewBox", "-30 -55 120 120"), // 여백을 주어 중앙 정렬 보정
+    svg.prop("width", "100%"),
+    svg.prop("height", "100%"),
+    svg.prop("preserveAspectRatio", "xMidYMid meet") // 중앙 정렬 강제
+),
                     string.concat(
                         "<defs>",
                         "<pattern ",

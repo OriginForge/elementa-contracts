@@ -180,7 +180,6 @@ contract botMiniGameFacet is modifiersFacet {
         ElementaToken storage token = s.elementaToken[1];
         ElementaNFT storage nft = s.elementaNFTs[s.userIndex[_userId]];
         
-        // min 1 ~ 64 random value
         
     
         require(
@@ -201,7 +200,10 @@ contract botMiniGameFacet is modifiersFacet {
             nft.updateHeartTime = block.timestamp;
         }
 
-        uint getReward = _amount * 1e19;
+        // min 1 ~ 64 random value
+        uint randomValue = LibVRF.resVRFRoulette(_userId);
+
+        uint getReward = randomValue * 1e19;
         // uint getReward = _playRouletteWithVRF() * 1e19;
         nft.exp += 30;
         nft.elementaPoint += getReward;
@@ -215,10 +217,6 @@ contract botMiniGameFacet is modifiersFacet {
         return getReward;
     }
 
-    function _playRouletteWithVRF() internal returns(uint) {
-        LibVRF.reqVRFRoulette();
-        IOraklVRF oraklVRF = IOraklVRF(address(0xAFfE6BaF73bAE2C8749Dc1A18F87c3e35d9fF777));
-        return oraklVRF.sRandomWords();
-    }
+    
 
 }

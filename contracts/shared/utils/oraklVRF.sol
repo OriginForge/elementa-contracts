@@ -5,65 +5,67 @@ import {VRFConsumerBase} from "@bisonai/orakl-contracts/v0.1/src/VRFConsumerBase
 import {IVRFCoordinator} from "@bisonai/orakl-contracts/v0.1/src/interfaces/IVRFCoordinator.sol";
 
 contract VRFConsumer is VRFConsumerBase {
-    uint256[] public sRandomWords; // 여러 개의 랜덤 값을 배열로 저장
-    address public diamondContract;
-    address public sOwner;
 
     IVRFCoordinator COORDINATOR;
-
+    uint64 public sAccountId;
+    bytes32 public sKeyHash;
+    uint32 public sCallbackGasLimit = 300000;
+    uint32 public sNumWords = 5;
+    
+    mapping(address => bool) public isOwner;
+    mapping(uint => string) public requestIdToUserId;
+    mapping(uint => uint[5]) public requestIdToRandomWords;
+    
     modifier onlyOwner() {
-        require(
-            msg.sender == sOwner || msg.sender == diamondContract,
-            "not owner"
-        );
+        require(isOwner[msg.sender], "not owner");
         _;
     }
 
     constructor(
+        uint64 accountId,
         address coordinator,
-        address _diamond
+        bytes32 keyHash
     ) VRFConsumerBase(coordinator) {
-        sOwner = msg.sender;
         COORDINATOR = IVRFCoordinator(coordinator);
-        diamondContract = _diamond;
+        sAccountId = accountId;
+        sKeyHash = keyHash;
     }
 
-    // Receive remaining payment from requestRandomWordsPayment
-    receive() external payable {}
-
-    function editDiamond(address _diamondAddress) public onlyOwner {
-        diamondContract = _diamondAddress;
+    function setAccountId(uint64 accountId) public onlyOwner {
+        sAccountId = accountId;
     }
 
-    function requestRandomWords(
-        bytes32 keyHash,
-        uint64 accId,
-        uint32 callbackGasLimit,
-        uint32 numWords
-    ) public onlyOwner returns (uint256 requestId) {
+    function setKeyHash(bytes32 keyHash) public onlyOwner {
+        sKeyHash = keyHash;
+    }
+
+    function setCallbackGasLimit(uint32 callbackGasLimit) public onlyOwner {
+        sCallbackGasLimit = callbackGasLimit;
+    }
+
+    function requestRandomWords() internal returns (uint256 requestId) {
         requestId = COORDINATOR.requestRandomWords(
-            keyHash,
-            accId,
-            callbackGasLimit,
-            numWords
+            sKeyHash,
+            sAccountId,
+            sCallbackGasLimit,
+            sNumWords
         );
     }
 
-    function fulfillRandomWords(
-        uint256 /* requestId */,
-        uint256[] memory randomWords
-    ) internal override {
-        // 배열에 여러 랜덤 값을 저장
-        sRandomWords = randomWords;
+    function elementaVRFCall(string memory _userId) public onlyOwner  {
+        uint requestId = requestRandomWords();
+        requestIdToUserId[requestId] = _userId;
     }
 
-    function VRFCall(
-        bytes32 keyHash,
-        uint64 accId,
-        uint32 callbackGasLimit,
-        uint32 numWords
-    ) public onlyOwner returns (uint[] memory) {
-        requestRandomWords(keyHash, accId, callbackGasLimit, numWords);
-        return sRandomWords;
+    function fulfillRandomWords(
+        uint256 requestId /* requestId */,
+        uint256[] memory randomWords
+    ) internal override {
+        for(uint i = 0; i < randomWords.length; i++) {
+            requestIdToRandomWords[requestId][i] = (randomWords[i] % 64 )+ 1;
+        }    
     }
+
+
+
 }

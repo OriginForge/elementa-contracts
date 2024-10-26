@@ -2,7 +2,13 @@
 pragma solidity ^0.8.22;
 
 interface IOraklVRF {
+    struct userRandomValue{ 
+        uint requestId;
+        uint8 tryIndex;
+    }
+
     function sRandomWords() external view returns (uint256);
+
     function VRFCall(
         bytes32 keyHash,
         uint64 accId,
@@ -14,5 +20,6 @@ interface IOraklVRF {
         uint32 callbackGasLimit,
         uint32 numWords) external returns(uint);
 
-
+    // Roulette
+function elementaVRFCall(string memory _userId) external returns(uint);
 }

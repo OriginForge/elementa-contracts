@@ -29,7 +29,7 @@ contract nftFacet is modifiersFacet {
                     ),
                     json.property(
                         "description",
-                        "Test Elementa dNFT, for testing"
+                        "The Elementa is a unique NFT that represents a character in the Elementa universe. Each Elementa has a unique set of attributes and abilities that make it valuable in the game.\n\nhttps://t.me/the_elementa_bot"
                     ),
                     json.property(
                         "image",
@@ -188,7 +188,8 @@ contract nftFacet is modifiersFacet {
                                     "stroke",
                                     svg.getDefURL("gradeOutline")
                                 ),
-                                svg.prop("stroke-width", "7")
+                                svg.prop("stroke-width", "20"),
+                                svg.prop("stroke-height", "20")
                             ),
                             ""
                         ),
@@ -226,7 +227,7 @@ contract nftFacet is modifiersFacet {
                         svg.el(
                             "g",
                             svg.prop("transform", "translate(62.5, 55.5)"),
-                            _generateOnlyCharacterSVG(_tokenId)
+                            __generateOnlyCharacterSVG(_tokenId)
                         ),
                         svg.text(
                             string.concat(
@@ -318,10 +319,11 @@ contract nftFacet is modifiersFacet {
             string.concat(
                 svg.top(
                     string.concat(
-                        svg.prop("viewBox", "0 0 125 125"),
-                        svg.prop("width", "100%"),
-                        svg.prop("height", "100%")
-                    ),
+    svg.prop("viewBox", "0 0 120 120"), // 여백을 주어 중앙 정렬 보정
+    svg.prop("width", "100%"),
+    svg.prop("height", "100%"),
+    svg.prop("preserveAspectRatio", "xMidYMid meet") // 중앙 정렬 강제
+),
                     string.concat(
                         "<defs>",
                         "<pattern ",
@@ -337,9 +339,67 @@ contract nftFacet is modifiersFacet {
                         string.concat("<circle cx='20' cy='20' r='3' fill='hsl(", LibString.toString(hue), ", ", LibString.toString(saturation), "%, ", LibString.toString(lightness - 60), "%)' />"),
                         "</pattern>",
                         "</defs>",
-                        "<g id='egg' transform='translate(0 0)'>",
+                        "<g id='egg' transform='translate(40 40)'>",
                         "<path d='m53.6 29.8c-2.5-18-13.9-27.8-21.6-27.8s-19.1 9.8-21.6 27.8c-2.4 18 5.5 32.2 21.6 32.2s24-14.2 21.6-32.2z' fill='url(#my-pattern)'/>",
                         string.concat("<path d='m53.6 29.8c-2-14.2-9.5-23.3-16.4-26.5 4.7 4.7 8.9 12.1 10.2 22.1 2.5 18-5.4 32.2-21.6 32.2-3.5 0-6.6-.7-9.2-1.9 3.7 4 8.9 6.3 15.4 6.3 16.1 0 24-14.2 21.6-32.2'  opacity='0.", '4', "'/>"),
+                        "</g>"
+                    )
+                )
+            );
+    }
+    // 
+    // 
+    // 
+    // 
+
+    function __generateOnlyCharacterSVG(uint _tokenId) internal view returns (string memory) {
+        ElementaNFT memory nft = s.elementaNFTs[_tokenId];
+        uint nftRandomValue = nft.originRandomValue;
+        
+        // nftRandomValue를 사용하여 랜덤 속성 생성
+        uint hue = nftRandomValue % 360;
+        uint saturation = 60 + (nftRandomValue % 30);
+        uint lightness = 74 + (nftRandomValue % 20);
+        uint circleOpacity1 = 30 + (nftRandomValue % 50);
+        uint circleOpacity2 = 50 + (nftRandomValue % 40);
+        
+        
+        // 패턴의 width와 height를 랜덤으로 설정
+        uint patternWidth = 15 + (nftRandomValue % 20);  // 15에서 34 사이의 값
+        uint patternHeight = 15 + ((nftRandomValue / 100) % 20);  // 15에서 34 사이의 값
+
+        return
+            string.concat(
+                svg.top(
+                    string.concat(
+    svg.prop("viewBox", "0 -10 150 150"), // 여백을 주어 중앙 정렬 보정
+    svg.prop("width", "100%"),
+    svg.prop("height", "100%"),
+    svg.prop("preserveAspectRatio", "xMidYMid meet") // 중앙 정렬 강제
+),
+                    string.concat(
+                        "<defs>",
+                        "<pattern ",
+                        "id='my-pattern' ",
+                        string.concat("width='0.", LibString.toString(patternWidth), "' "),
+                        string.concat("height='0.", LibString.toString(patternHeight), "' "), // transparent space
+                        "viewBox='0 0 40 40' ",
+                        string.concat("patternTransform='translate(0 ", LibString.toString(nftRandomValue % 200), ") rotate(", LibString.toString(nftRandomValue % 360), ")' "),
+                        ">",
+                        string.concat("<rect width='100%' height='100%' fill='hsl(", LibString.toString(hue), ", ", LibString.toString(saturation), "%, ", LibString.toString(lightness), "%)' />"),
+                        string.concat("<circle cx='20' cy='20' r='15' fill='hsl(", LibString.toString(hue), ", ", LibString.toString(saturation), "%, ", LibString.toString(lightness - 50), "%)' fill-opacity='.", LibString.toString(circleOpacity1), "'/>"),
+                        string.concat("<circle cx='20' cy='20' r='9' fill='hsl(", LibString.toString(hue), ", ", LibString.toString(saturation), "%, ", LibString.toString(lightness - 50), "%)' fill-opacity='.", LibString.toString(circleOpacity2), "' />"),
+                        string.concat("<circle cx='20' cy='20' r='3' fill='hsl(", LibString.toString(hue), ", ", LibString.toString(saturation), "%, ", LibString.toString(lightness - 60), "%)' />"),
+                        "</pattern>",
+                        "<animate attributeName='patternTransform' attributeType='XML' type='rotate' from='0 20 20' to='360 20 20' dur='10s' repeatCount='indefinite' />",
+                        "</defs>",
+                        "<g id='egg' transform='translate(10 -10)'>",
+                        "<path d='m53.6 29.8c-2.5-18-13.9-27.8-21.6-27.8s-19.1 9.8-21.6 27.8c-2.4 18 5.5 32.2 21.6 32.2s24-14.2 21.6-32.2z' fill='url(#my-pattern)'>",
+                        "<animateTransform attributeName='transform' type='translate' values='0,0; 0,-2; 0,0; 0,2; 0,0' dur='2s' repeatCount='indefinite' />",
+                        "</path>",
+                        string.concat("<path d='m53.6 29.8c-2-14.2-9.5-23.3-16.4-26.5 4.7 4.7 8.9 12.1 10.2 22.1 2.5 18-5.4 32.2-21.6 32.2-3.5 0-6.6-.7-9.2-1.9 3.7 4 8.9 6.3 15.4 6.3 16.1 0 24-14.2 21.6-32.2'  opacity='0.", '4', "'>"),
+                        "<animateTransform attributeName='transform' type='translate' values='0,0; 0,-2; 0,0; 0,2; 0,0' dur='2s' repeatCount='indefinite' />",
+                        "</path>",
                         "</g>"
                     )
                 )

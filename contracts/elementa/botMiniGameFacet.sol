@@ -124,21 +124,6 @@ contract botMiniGameFacet is modifiersFacet {
     }
 
 
-    // function snailzUpgrade(uint _telegramId) external onlyDelegateEOA {
-    //     require(s.isDelegateAddress[msg.sender], "Not delegate EOA");
-    //     require(s.users[_telegramId].exp >= s.gradeInfos[s.users[_telegramId].userGrade+1].requireExp, "Not enough exp");
-        
-    //     s.users[_telegramId].userGrade += 1;
-    //     s.users[_telegramId].heartMax = s.gradeInfos[s.users[_telegramId].userGrade].heartMax;
-    //     s.users[_telegramId].heartPoint = s.gradeInfos[s.users[_telegramId].userGrade].heartMax;
-    //     s.users[_telegramId].lastHeartTime = block.timestamp;
-
-    //     s.gradeInfos[s.users[_telegramId].userGrade].gradeUserCount += 1;
-    //     s.gradeInfos[s.users[_telegramId].userGrade-1].gradeUserCount -= 1;
-
-
-    //     emit userUpgrade(_telegramId, s.users[_telegramId].userGrade);
-    // }
 
     function playDice(string memory _userId, uint _amount) external onlyDelegateEOA returns(uint){    
         _updateHeartPoints(s.userIndex[_userId]);
@@ -162,7 +147,9 @@ contract botMiniGameFacet is modifiersFacet {
             nft.updateHeartTime = block.timestamp;
         }
 
-        uint getReward = _amount * 1e19;
+
+        uint randomValue = LibVRF.resVRFDice(_userId);
+        uint getReward = randomValue * 1e19;
         nft.exp += 10;
         nft.elementaPoint += getReward;
         token.mintedSupply += getReward;
@@ -180,7 +167,6 @@ contract botMiniGameFacet is modifiersFacet {
         ElementaToken storage token = s.elementaToken[1];
         ElementaNFT storage nft = s.elementaNFTs[s.userIndex[_userId]];
         
-        // min 1 ~ 64 random value
         
     
         require(
@@ -201,8 +187,11 @@ contract botMiniGameFacet is modifiersFacet {
             nft.updateHeartTime = block.timestamp;
         }
 
-        uint getReward = _amount * 1e19;
-        // uint getReward = _playRouletteWithVRF() * 1e19;
+        // min 1 ~ 64 random value
+        uint randomValue = LibVRF.resVRFRoulette(_userId);
+
+        uint getReward = randomValue * 1e19;
+        
         nft.exp += 30;
         nft.elementaPoint += getReward;
         token.mintedSupply += getReward;
@@ -215,13 +204,15 @@ contract botMiniGameFacet is modifiersFacet {
         return getReward;
     }
 
-    // function _playRouletteWithVRF() internal returns(uint) {
-    //     LibVRF.reqVRFRoulette();
-    //     IOraklVRF oraklVRF = IOraklVRF(address(0xAFfE6BaF73bAE2C8749Dc1A18F87c3e35d9fF777));
-    //     return oraklVRF.sRandomWords();
-    // }
+    function getRouletteRandomValue(string memory _userId) external view returns(uint) {
+        IOraklVRF oraklVRF = IOraklVRF(address(0xA1b9Be3dEc8612e727564Baf46387c4366912d74));
+        return oraklVRF.resRandomValues(oraklVRF.userIdToRequestId(_userId).requestId, oraklVRF.userIdToRequestId(_userId).tryIndex);
+    }
 
-    
+    function getDiceRandomValue(string memory _userId) external view returns(uint) {
+        IOraklVRF oraklVRF = IOraklVRF(address(0xF1A9564396F0d27FC61bA2E0E0938Dc0995D4223));
+        return oraklVRF.resRandomValues(oraklVRF.userIdToRequestId(_userId).requestId, oraklVRF.userIdToRequestId(_userId).tryIndex);
+    }
 
 }
 

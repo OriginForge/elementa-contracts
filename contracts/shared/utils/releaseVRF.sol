@@ -6,16 +6,24 @@ import {IVRFCoordinator} from "@bisonai/orakl-contracts/v0.1/src/interfaces/IVRF
 
 contract VRFConsumer is VRFConsumerBase {
 
+    struct userRandomValue {
+        uint256 requestId;
+        uint8 tryIndex;
+    }
+
     IVRFCoordinator COORDINATOR;
     uint64 public sAccountId;
     bytes32 public sKeyHash;
     uint32 public sCallbackGasLimit = 300000;
-    uint32 public sNumWords = 5;
+    uint32 public sNumWords = 6;
     
     mapping(address => bool) public isOwner;
+    // userId > userRandomValue Struct
+    mapping(string => userRandomValue) public userIdToRequestId;
     mapping(uint => string) public requestIdToUserId;
-    mapping(uint => uint[5]) public requestIdToRandomWords;
-    
+    // reqKey > randomValue
+    mapping(uint => mapping(uint => uint)) public resRandomValues;
+
     modifier onlyOwner() {
         require(isOwner[msg.sender], "not owner");
         _;
@@ -29,6 +37,11 @@ contract VRFConsumer is VRFConsumerBase {
         COORDINATOR = IVRFCoordinator(coordinator);
         sAccountId = accountId;
         sKeyHash = keyHash;
+        isOwner[msg.sender] = true;
+    }
+
+    function setOwner(address _owner) public onlyOwner {
+        isOwner[_owner] = true;
     }
 
     function setAccountId(uint64 accountId) public onlyOwner {
@@ -52,20 +65,36 @@ contract VRFConsumer is VRFConsumerBase {
         );
     }
 
-    function elementaVRFCall(string memory _userId) public onlyOwner  {
+    function elementaVRFCall(string memory _userId) public onlyOwner returns(uint) {
         uint requestId = requestRandomWords();
+
         requestIdToUserId[requestId] = _userId;
+
+        if(userIdToRequestId[_userId].tryIndex == 0) {
+        uint randomHash = uint(keccak256(abi.encodePacked(block.timestamp, requestId, msg.sender)));
+        uint randomNumber = uint(randomHash % 64) + 1;
+        userIdToRequestId[_userId].tryIndex ++;
+        return randomNumber;
+        }
+        if(userIdToRequestId[_userId].tryIndex >= 5 ){
+            userIdToRequestId[_userId].tryIndex = 1;
+        }
+        return resRandomValues[userIdToRequestId[_userId].requestId][userIdToRequestId[_userId].tryIndex];
+
+        
+
     }
 
     function fulfillRandomWords(
         uint256 requestId /* requestId */,
         uint256[] memory randomWords
     ) internal override {
-        for(uint i = 0; i < randomWords.length; i++) {
-            requestIdToRandomWords[requestId][i] = (randomWords[i] % 64 )+ 1;
-        }    
+        userIdToRequestId[requestIdToUserId[requestId]].requestId = requestId;
+        
+        for(uint i = 0; i < sNumWords; i++){
+            resRandomValues[requestId][i] = (randomWords[i] % 64 )+ 1;
+        }
+        userIdToRequestId[requestIdToUserId[requestId]].tryIndex ++;        
     }
-
-
 
 }

@@ -124,21 +124,6 @@ contract botMiniGameFacet is modifiersFacet {
     }
 
 
-    // function snailzUpgrade(uint _telegramId) external onlyDelegateEOA {
-    //     require(s.isDelegateAddress[msg.sender], "Not delegate EOA");
-    //     require(s.users[_telegramId].exp >= s.gradeInfos[s.users[_telegramId].userGrade+1].requireExp, "Not enough exp");
-        
-    //     s.users[_telegramId].userGrade += 1;
-    //     s.users[_telegramId].heartMax = s.gradeInfos[s.users[_telegramId].userGrade].heartMax;
-    //     s.users[_telegramId].heartPoint = s.gradeInfos[s.users[_telegramId].userGrade].heartMax;
-    //     s.users[_telegramId].lastHeartTime = block.timestamp;
-
-    //     s.gradeInfos[s.users[_telegramId].userGrade].gradeUserCount += 1;
-    //     s.gradeInfos[s.users[_telegramId].userGrade-1].gradeUserCount -= 1;
-
-
-    //     emit userUpgrade(_telegramId, s.users[_telegramId].userGrade);
-    // }
 
     function playDice(string memory _userId, uint _amount) external onlyDelegateEOA returns(uint){    
         _updateHeartPoints(s.userIndex[_userId]);
@@ -162,7 +147,9 @@ contract botMiniGameFacet is modifiersFacet {
             nft.updateHeartTime = block.timestamp;
         }
 
-        uint getReward = _amount * 1e19;
+
+        uint randomValue = LibVRF.resVRFDice(_userId);
+        uint getReward = randomValue * 1e19;
         nft.exp += 10;
         nft.elementaPoint += getReward;
         token.mintedSupply += getReward;
@@ -204,7 +191,7 @@ contract botMiniGameFacet is modifiersFacet {
         uint randomValue = LibVRF.resVRFRoulette(_userId);
 
         uint getReward = randomValue * 1e19;
-        // uint getReward = _playRouletteWithVRF() * 1e19;
+        
         nft.exp += 30;
         nft.elementaPoint += getReward;
         token.mintedSupply += getReward;

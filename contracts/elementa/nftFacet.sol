@@ -167,7 +167,7 @@ contract nftFacet is modifiersFacet {
         return
             string.concat(
                 svg.top(
-                    svg.prop("viewBox", "0 0 250 250"),
+                    svg.prop("viewBox", "-30 -55 120 120"),
                     string.concat(
                         // Defining gradients
                         svg.el(

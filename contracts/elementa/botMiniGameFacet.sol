@@ -215,10 +215,15 @@ contract botMiniGameFacet is modifiersFacet {
         return getReward;
     }
 
-    function _playRouletteWithVRF() internal returns(uint) {
-        LibVRF.reqVRFRoulette();
-        IOraklVRF oraklVRF = IOraklVRF(address(0xAFfE6BaF73bAE2C8749Dc1A18F87c3e35d9fF777));
-        return oraklVRF.sRandomWords();
-    }
+    // function _playRouletteWithVRF() internal returns(uint) {
+    //     LibVRF.reqVRFRoulette();
+    //     IOraklVRF oraklVRF = IOraklVRF(address(0xAFfE6BaF73bAE2C8749Dc1A18F87c3e35d9fF777));
+    //     return oraklVRF.sRandomWords();
+    // }
+
+    
 
 }
+
+
+
